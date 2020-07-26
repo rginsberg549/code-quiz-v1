@@ -1,13 +1,4 @@
-//Start Quiz
-//Start Timer
-//Initialize User Score
-//Display Question/Answers from List of Q/A Array
-//Receive User Selection
-//Determine if Answer is Correct/Incorrect - Display to User
-//If correct - give user a point
-//If incorrect - subtract time from timer
-//End Game - If time = 0 or looped through entire list of questions
-
+//Question List
 var dict = {
     "q1" : {
         "question" : "This is question # 1",
@@ -21,96 +12,134 @@ var dict = {
     }
 }
 
+//Initialize Variables
+
 var questionIndex = 0;
 var answerIndex = 0;
-var quizTime = 3;
-var quizTimeRemaining = 0;
-var isPlaying = false;
-var score = 0;
 
+var totalSeconds = 5;
+var secondsElapsed = 0;
+
+var interval
+
+//Get references to variables
 var start = document.getElementById("start");
-var timeLeft = document.getElementById("timer");
+
+var minutesDisplay = document.querySelector("#minutes");
+var secondsDisplay = document.querySelector("#seconds");
+
 var questionText = document.getElementById("question-text");
 var optionList = document.getElementById("options");
 
-
-
-function startTimer() {
-    isPlaying = true;
-    start.setAttribute("class", "hide-start");
-    var interval = setInterval(function () {
-        quizTimeRemaining = quizTime--;
-        timeLeft.textContent = quizTimeRemaining;
-        if (quizTimeRemaining == 0) {
-            stopTimer(interval);
-            isPlaying = false;
-            console.log(isPlaying);
-        };
-    }, 1000);
-}
-
-function stopTimer(interval) {
-    clearInterval(interval);
-
-}
-
-function playGame() {
-    var isPlaying = true;
-    startTimer();
-    var numQuestions = Object.keys(dict).length
-
-    while (isPlaying) {
-        var totalQuestions = Object.keys(dict).length
-        var questionIndex = 0
-
-        getQuestion();
-        getOptions();
-        
-    }
-}
-
-
 function getQuestion() {
-    questionText.textContent = "";
     var temp = Object.keys(dict)[questionIndex];
-    questionText.textContent = dict[temp].question;
+    var questionText = dict[temp].question;
+    return questionText;
 }
 
 function getOptions() {
     var temp = Object.keys(dict)[questionIndex];
-    options = dict[temp].options;
-    
-    for (let index = 0; index < options.length; index++) {
-        var btnElement = document.createElement("button");
-        btnElement.setAttribute("type", "button" );
-        btnElement.setAttribute("class", "btn btn-warning");
-        btnElement.setAttribute("value", options[index]);
-        btnElement.textContent = options[index];
-        optionList.append(btnElement);
-        }
-
-}
-
-function validateOption(event) {
-    var temp = Object.keys(dict)[questionIndex];
-    var correctAnswer = dict[temp].answer;
-    
-    var userChoice = event.target.value;
-
-    if (userChoice != correctAnswer) {
-        console.log(questionIndex++)
-
-    } else {
-        score ++
-        console.log(questionIndex++);
+    questionOptions = dict[temp].options;
+    return options;
     }
 
+
+// This function is where the "time" aspect of the timer runs
+// Notice no settings are changed other than to increment the secondsElapsed var
+function startTimer() {
+    // setTime();
+    // renderTime();
+
+    // We only want to start the timer if totalSeconds is > 0
+    if (totalSeconds > 0) {
+        /* The "interval" variable here using "setInterval()" begins the recurring increment of the
+           secondsElapsed variable which is used to check if the time is up */
+        interval = setInterval(function() {
+            secondsElapsed++;
+
+            // So renderTime() is called here once every second.
+            renderTime();
+        }, 1000);
+    } else {
+    }
 }
 
-start.addEventListener("click", playGame);
-options.addEventListener("click", validateOption);
+function renderTime() {
+    // When renderTime is called it sets the textContent for the timer html...
+    minutesDisplay.textContent = getFormattedMinutes();
+    secondsDisplay.textContent = getFormattedSeconds();
+
+    questionText.textContent = getQuestion();
+    optionList.textContent = getOptions();
+
+    // ..and then checks to see if the time has run out
+    if (secondsElapsed >= totalSeconds) {
+        if (status === "Working") {
+            alert("Playing");
+        } else {
+        }
+
+        stopTimer();
+    }
+}
+
+function getFormattedMinutes() {
+    //
+    var secondsLeft = totalSeconds - secondsElapsed;
+
+    var minutesLeft = Math.floor(secondsLeft / 60);
+
+    var formattedMinutes;
+
+    if (minutesLeft < 10) {
+        formattedMinutes = "0" + minutesLeft;
+    } else {
+        formattedMinutes = minutesLeft;
+    }
+
+    return formattedMinutes;
+}
+
+function getFormattedSeconds() {
+    var secondsLeft = (totalSeconds - secondsElapsed) % 60;
+
+    var formattedSeconds;
+
+    if (secondsLeft < 10) {
+        formattedSeconds = "0" + secondsLeft;
+    } else {
+        formattedSeconds = secondsLeft;
+    }
+
+    return formattedSeconds;
+}
+
+/* This function stops the interval and also resets secondsElapsed
+   and calls "setTime()" which effectively reset the timer
+   to the input selections workMinutesInput.value and restMinutesInput.value */
+   function stopTimer() {
+    secondsElapsed = 0;
+    setTime();
+    renderTime();
+}
+
+/* This function retrieves the values from the html input elements; Sort of
+   getting run in the background, it sets the totalSeconds variable which
+   is used in getFormattedMinutes/Seconds() and the renderTime() function.
+   It essentially resets our timer */
+   function setTime() {
+    var minutes;
+
+    if (status === "Working") {
+        minutes = workMinutesInput.value.trim();
+    }
+
+    clearInterval(interval);
+    questionText.textContent = "Game Over";
+    optionList.textContent = "";
+
+    totalSeconds = 5;
+}
 
 
-
-
-
+start.addEventListener("click", startTimer);
