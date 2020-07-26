@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles.css">
+    <title>Code Quiz</title>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-light bg-light">
+            <a class="" href="#"><span class="navbar-brand mb-0 h1">View High Scores</span></a>
+            <span class="navbar-brand mb-0 h1">Remaining Time:<span id="timer"></span></span>
+          </nav>
+    </header>
+
+    <div class="container">
+        <div class="row">
+            <h2 id="question-text" class="question mx-auto">Press the Button Below to Test Your Skills</h2>
+        </div>
+        
+        <div class="row">
+            <ul id="options" class="options mx-auto"></ul>
+        </div>
+
+        <div class="row border-top">
+            <h3 class="validation"></h3>
+        </div>
+
+        <div class="row">
+            <button type="button" id="start" class="btn btn-primary mx-auto justify-text">Start Quiz</button>
+            <button type="button" class="btn btn-info mx-auto hide-start">Go Back</button>
+        </div>
+    </div>
+
+    <script src="scripts.js"></script>
+
+
+    
+</body>
+</html>
