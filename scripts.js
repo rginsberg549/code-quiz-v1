@@ -20,7 +20,7 @@ var secondsElapsed = 0;
 
 var userScore = 0;
 
-var interval
+var interval;
 
 //Get references to variables
 var start = document.getElementById("start");
@@ -64,6 +64,7 @@ function startTimer() {
             renderTime();
         }, 1000);
     } else {
+        endGame();
     }
 }
 
@@ -74,13 +75,8 @@ function renderTime() {
 
     // ..and then checks to see if the time has run out
     if (secondsElapsed >= totalSeconds) {
-        if (status === "Working") {
-            alert("Playing");
-        } else {
-
-        }
-
         stopTimer();
+        endGame();
     }
 }
 
@@ -120,7 +116,6 @@ function getFormattedSeconds() {
    to the input selections workMinutesInput.value and restMinutesInput.value */
    function stopTimer() {
     secondsElapsed = 0;
-    setTime();
     renderTime();
 }
 
@@ -133,8 +128,6 @@ function getFormattedSeconds() {
     clearCurrentQuestion();
     totalSeconds = 5;
 }
-
-var currentIndex = 0;
 
 function startGame() {
     clearCurrentQuestion();
@@ -188,10 +181,12 @@ function clearCurrentQuestion() {
 
 function endGame() {
     clearCurrentQuestion();
-    clearInterval(interval);
+    stopTimer();
     questionIndex = 0;
     totalSeconds = 5;
-    start.textContent = "Replay Quiz";
+    console.log(totalSeconds);
+    questionText.textContent = "Game Over";
+    clearInterval(interval);
 }
 
 
