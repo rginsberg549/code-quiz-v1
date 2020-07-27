@@ -6,8 +6,16 @@ var questions = [
         "answer" : "Dinasaur"
     },{
         "question" : "question text",
-        "options" : [1,2,3,4],
-        "answer" : "answer"
+        "options" : ["1","2","3","4"],
+        "answer" : "1"
+    },{
+        "question" : "question text",
+        "options" : ["1","2","3","4"],
+        "answer" : "1"
+    },{
+        "question" : "question text",
+        "options" : ["1","2","3","4"],
+        "answer" : "1"
     }
 ]
 
@@ -30,6 +38,8 @@ var secondsDisplay = document.querySelector("#seconds");
 
 var questionText = document.getElementById("question-text");
 var optionList = document.getElementById("options");
+var totalQuestions = document.getElementById("total-questions");
+var correctQuestions = document.getElementById("correct");
 
 function getQuestion() {
     var currentQuestion = questions[questionIndex].question;
@@ -42,10 +52,19 @@ function getOptions() {
     }
 
 function getAnswer() {
-    var currentAnswer = questions[questionIndex.answer]
+    var currentAnswer = questions[questionIndex].answer;
     return currentAnswer;
 }
 
+function getTotalQuestions() {
+    var totalQuestions = questions.length;
+    return totalQuestions;
+}
+
+function resetUserScore() {
+    userScore = 0;
+    correctQuestions.textContent = userScore;
+}
 
 // This function is where the "time" aspect of the timer runs
 // Notice no settings are changed other than to increment the secondsElapsed var
@@ -131,6 +150,7 @@ function setTime() {
 
 function startGame() {
     clearCurrentQuestion();
+    resetUserScore();
     displayCurrentQuestion();
     startTimer();
 }
@@ -148,9 +168,11 @@ function displayCurrentQuestion(){
         optionElement.textContent = options[index];
         optionList.appendChild(optionElement);
         optionElement.addEventListener("click", checkUserChoice);
-        
     }
- }
+    
+    var countQuestions = getTotalQuestions();
+    totalQuestions.textContent = countQuestions;
+}
 
 function checkUserChoice(event) {
     event.preventDefault();
@@ -159,6 +181,8 @@ function checkUserChoice(event) {
 
     if (userChoice === correctAnswer) {
         questionIndex++;
+        userScore++;
+        correctQuestions.textContent = userScore;
         
         if (questionIndex >= questions.length){
             return endGame();
