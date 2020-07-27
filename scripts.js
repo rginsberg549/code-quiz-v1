@@ -1,24 +1,24 @@
 //Question List
-var dict = {
-    "q1" : {
+var questions = [
+    {
         "question" : "This is question # 1",
         "options" : ["Dinasaur","Giuraffe", "alligatoer", "dogggy"],
         "answer" : "Dinasaur"
-    },
-    "q2" : {
+    },{
         "question" : "question text",
         "options" : [1,2,3,4],
         "answer" : "answer"
     }
-}
+]
 
 //Initialize Variables
 
 var questionIndex = 0;
-var answerIndex = 0;
 
 var totalSeconds = 5;
 var secondsElapsed = 0;
+
+var userScore = 0;
 
 var interval
 
@@ -32,16 +32,19 @@ var questionText = document.getElementById("question-text");
 var optionList = document.getElementById("options");
 
 function getQuestion() {
-    var temp = Object.keys(dict)[questionIndex];
-    var questionText = dict[temp].question;
-    return questionText;
+    var currentQuestion = questions[questionIndex].question;
+    return currentQuestion;
 }
 
 function getOptions() {
-    var temp = Object.keys(dict)[questionIndex];
-    questionOptions = dict[temp].options;
-    return options;
+    var currentOptions = questions[questionIndex].options;
+    return currentOptions;
     }
+
+function getAnswer() {
+    var currentAnswer = questions[questionIndex.answer]
+    return currentAnswer;
+}
 
 
 // This function is where the "time" aspect of the timer runs
@@ -69,14 +72,12 @@ function renderTime() {
     minutesDisplay.textContent = getFormattedMinutes();
     secondsDisplay.textContent = getFormattedSeconds();
 
-    questionText.textContent = getQuestion();
-    optionList.textContent = getOptions();
-
     // ..and then checks to see if the time has run out
     if (secondsElapsed >= totalSeconds) {
         if (status === "Working") {
             alert("Playing");
         } else {
+
         }
 
         stopTimer();
@@ -128,18 +129,72 @@ function getFormattedSeconds() {
    is used in getFormattedMinutes/Seconds() and the renderTime() function.
    It essentially resets our timer */
    function setTime() {
-    var minutes;
-
-    if (status === "Working") {
-        minutes = workMinutesInput.value.trim();
-    }
-
     clearInterval(interval);
-    questionText.textContent = "Game Over";
-    optionList.textContent = "";
-
+    clearCurrentQuestion();
     totalSeconds = 5;
 }
 
+var currentIndex = 0;
 
-start.addEventListener("click", startTimer);
+function startGame() {
+    clearCurrentQuestion();
+    displayCurrentQuestion();
+    startTimer();
+}
+
+function displayCurrentQuestion(){
+    var question = getQuestion();
+    var questionElement = document.createElement("p");
+    questionElement.textContent = question;
+    questionText.appendChild(questionElement);
+
+    var options = getOptions()
+    for (let index = 0; index < options.length; index++) {
+        var optionElement = document.createElement("button");
+        optionElement.setAttribute("class", "btn btn-info")
+        optionElement.textContent = options[index];
+        optionList.appendChild(optionElement);
+        optionElement.addEventListener("click", checkUserChoice);
+        
+    }
+ }
+
+function checkUserChoice(event) {
+    event.preventDefault();
+    var userChoice = event.target.textContent;
+    var correctAnswer = getAnswer();
+
+    if (userChoice === correctAnswer) {
+        questionIndex++;
+        if (questionIndex >= questions.length){
+            return endGame();
+        }
+        clearCurrentQuestion();
+        displayCurrentQuestion();
+    } else {
+        questionIndex++;
+        if (questionIndex >= questions.length){
+            return endGame();
+        }
+        clearCurrentQuestion();
+        displayCurrentQuestion();
+        }
+}
+
+function clearCurrentQuestion() {
+    questionText.textContent = "";
+    optionList.textContent = "";
+}
+
+function endGame() {
+    clearCurrentQuestion();
+    clearInterval(interval);
+    questionIndex = 0;
+    totalSeconds = 5;
+    start.textContent = "Replay Quiz";
+}
+
+
+
+
+start.addEventListener("click", startGame);
