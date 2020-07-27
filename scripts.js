@@ -123,7 +123,7 @@ function getFormattedSeconds() {
    getting run in the background, it sets the totalSeconds variable which
    is used in getFormattedMinutes/Seconds() and the renderTime() function.
    It essentially resets our timer */
-   function setTime() {
+function setTime() {
     clearInterval(interval);
     clearCurrentQuestion();
     totalSeconds = 5;
@@ -159,6 +159,7 @@ function checkUserChoice(event) {
 
     if (userChoice === correctAnswer) {
         questionIndex++;
+        
         if (questionIndex >= questions.length){
             return endGame();
         }
@@ -184,12 +185,9 @@ function endGame() {
     stopTimer();
     questionIndex = 0;
     totalSeconds = 5;
-    console.log(totalSeconds);
     questionText.textContent = "Game Over";
     clearInterval(interval);
 }
-
-
 
 
 start.addEventListener("click", startGame);
