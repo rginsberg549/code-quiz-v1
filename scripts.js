@@ -1,21 +1,21 @@
 //Question List
 var questions = [
     {
-        "question" : "This is question # 1",
-        "options" : ["Dinasaur","Giuraffe", "alligatoer", "dogggy"],
-        "answer" : "Dinasaur"
+        "question" : "Question #1",
+        "options" : ["Option 1", "Option 2", "Option 3", "Option 4"],
+        "answer" : "Option 1"
     },{
-        "question" : "question text",
-        "options" : ["1","2","3","4"],
-        "answer" : "1"
+        "question" : "Question #2",
+        "options" : ["Option 1", "Option 2", "Option 3", "Option 4"],
+        "answer" : "Option 2"
     },{
-        "question" : "question text",
-        "options" : ["1","2","3","4"],
-        "answer" : "1"
+        "question" : "Question #3",
+        "options" : ["Option 1", "Option 2", "Option 3", "Option 4"],
+        "answer" : "Option 3"
     },{
-        "question" : "question text",
-        "options" : ["1","2","3","4"],
-        "answer" : "1"
+        "question" : "Question #4",
+        "options" : ["Option 1", "Option 2", "Option 3", "Option 4"],
+        "answer" : "Option 4"
     }
 ]
 
@@ -23,12 +23,13 @@ var questions = [
 
 var questionIndex = 0;
 
-var totalSeconds = 5;
+var totalSeconds = 20;
 var secondsElapsed = 0;
 
 var userScore = 0;
 
 var interval;
+var timeOut;
 
 //Get references to variables
 var start = document.getElementById("start");
@@ -38,8 +39,19 @@ var secondsDisplay = document.querySelector("#seconds");
 
 var questionText = document.getElementById("question-text");
 var optionList = document.getElementById("options");
-var totalQuestions = document.getElementById("total-questions");
+var totalQuestions1 = document.getElementById("total-questions-1");
+var totalQuestions2 = document.getElementById("total-questions-2");
+var currentQuestionElement = document.getElementById("current-question");
 var correctQuestions = document.getElementById("correct");
+
+var saveScoreForm = document.getElementById("save-score");
+var saveScoreBtn = document.getElementById("save-score-button");
+var msgDiv = document.querySelector("#msg");
+
+var viewScores = document.getElementById("view-scores");
+var clearScores = document.getElementById("clear-score-button");
+
+var validation = document.getElementById("validation");
 
 function getQuestion() {
     var currentQuestion = questions[questionIndex].question;
@@ -61,9 +73,35 @@ function getTotalQuestions() {
     return totalQuestions;
 }
 
+function getCurrentQuestion() {
+    var currentQuestion = questionIndex + 1;
+    currentQuestionElement.textContent = currentQuestion;
+    return currentQuestion;
+}
+
 function resetUserScore() {
     userScore = 0;
     correctQuestions.textContent = userScore;
+}
+
+function correctAnwerMsg() {
+    validation.textContent = "Correct";
+
+    timeOut = setTimeout(function(){
+        validation.textContent = '';
+    }, 1000);
+}
+
+function incorrectAnswerMsg() {
+    validation.textContent = "Incorrect";
+    timeOut = setTimeout(function(){
+        validation.textContent = '';
+    }, 1000);
+}
+
+function clearAnswerMsg() {
+    validation.textContent = "";
+    clearTimeout(timeOut);
 }
 
 // This function is where the "time" aspect of the timer runs
@@ -133,7 +171,7 @@ function getFormattedSeconds() {
 /* This function stops the interval and also resets secondsElapsed
    and calls "setTime()" which effectively reset the timer
    to the input selections workMinutesInput.value and restMinutesInput.value */
-   function stopTimer() {
+function stopTimer() {
     secondsElapsed = 0;
     renderTime();
 }
@@ -149,6 +187,10 @@ function setTime() {
 }
 
 function startGame() {
+    start.classList.add("hide-start");
+    saveScoreForm.classList.add("hide-start");
+    saveScoreForm.classList.remove("show-start");
+
     clearCurrentQuestion();
     resetUserScore();
     displayCurrentQuestion();
@@ -171,7 +213,10 @@ function displayCurrentQuestion(){
     }
     
     var countQuestions = getTotalQuestions();
-    totalQuestions.textContent = countQuestions;
+    totalQuestions1.textContent = countQuestions;
+    totalQuestions2.textContent = countQuestions;
+
+    currentQuestionElement.textContent = getCurrentQuestion();
 }
 
 function checkUserChoice(event) {
@@ -183,14 +228,17 @@ function checkUserChoice(event) {
         questionIndex++;
         userScore++;
         correctQuestions.textContent = userScore;
-        
+        correctAnwerMsg();
+ 
         if (questionIndex >= questions.length){
             return endGame();
         }
         clearCurrentQuestion();
         displayCurrentQuestion();
+
     } else {
         questionIndex++;
+        incorrectAnswerMsg();
         if (questionIndex >= questions.length){
             return endGame();
         }
@@ -204,14 +252,106 @@ function clearCurrentQuestion() {
     optionList.textContent = "";
 }
 
+function displayResults() {
+    clearTimeout(timeOut);
+    validation.textContent = "Your score: " + userScore;
+    getUserEmail();
+    hideClearScore();
+}
+
+function getUserEmail() {
+    saveScoreForm.classList.remove("hide-start");
+    saveScoreForm.classList.add("show-start");
+}
+
+function hideUserEmail() {
+    saveScoreForm.classList.remove("show-start");
+    saveScoreForm.classList.add("hide-start");
+}
+
+function hideClearScore() {
+    clearScores.classList.remove("show-start");
+    clearScores.classList.add("hide-start");
+}
+
+function showClearScore() {
+    clearScores.classList.remove("hide-start");
+    clearScores.classList.add("show-start");
+}
+
+function saveUserScore(event) {
+    event.preventDefault();
+    clearAnswerMsg();
+    
+    var email = document.getElementById("user-name").value;
+
+    var user = {
+        email: email,
+        score: userScore
+    }
+  
+    if (email === "") {
+      displayMessage("error", "Email cannot be blank");
+    } else {
+      localStorage.setItem(email, JSON.stringify(user));
+      hideUserEmail();
+      questionText.textContent = "Score Has Been Saved. Would you like to play again?";
+    }
+}
+
+function displayScores() {
+    clearCurrentQuestion();
+    clearAnswerMsg();
+    stopTimer();
+    clearInterval(interval);
+    clearTimeout(timeOut);
+    hideUserEmail();
+    showClearScore();
+    questionIndex = 0;
+    userScore.textContent = 0;
+    correctQuestions.textContent = 0;
+    currentQuestionElement.textContent = 0;
+    questionText.textContent = "High Scores";
+    start.classList.remove("hide-start");
+    forEachKey();
+    
+}
+
+function displayMessage(type, message) {
+    msgDiv.textContent = message;
+    msgDiv.setAttribute("class", type);
+  }
+
 function endGame() {
     clearCurrentQuestion();
+    clearAnswerMsg();
     stopTimer();
     questionIndex = 0;
-    totalSeconds = 5;
+    totalSeconds = 20;
     questionText.textContent = "Game Over";
     clearInterval(interval);
+    start.classList.remove("hide-start");
+    start.textContent = "Play Again"
+    displayResults();
+    clearTimeout(timeOut);
 }
+
+function forEachKey() {
+    var storageKeys = []
+    for (var i = 0; i < localStorage.length; i++) {
+      storageKeys.push(localStorage.key(i));
+    }
+
+    for (let index = 0; index < storageKeys.length; index++) {
+        var liElement = document.createElement("li");
+        var allUsers = JSON.parse(localStorage.getItem(storageKeys[index]));
+        liElement.textContent = allUsers.email + "-" + allUsers.score;
+        options.appendChild(liElement); 
+    }
+    console.log(storageKeys);
+  }
 
 
 start.addEventListener("click", startGame);
+saveScoreBtn.addEventListener("click", saveUserScore);
+viewScores.addEventListener("click", displayScores);

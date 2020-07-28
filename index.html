@@ -10,14 +10,16 @@
 <body>
     <header>
         <nav class="navbar navbar-light bg-light">
-            <a class="" href="#"><span class="navbar-brand mb-0 h1">View High Scores</span></a>
-            <div class="time">
-                <strong>Time Remaining</strong>
+            <a id="view-scores" href="#"><span class="navbar-brand mb-0 h1">View High Scores</span></a>
+            <div class="time score">
+                <strong>Time Remaining - </strong>
                 <span id="minutes">00</span>:<span id="seconds">00</span>
-              </div>
-              <div class="score">
-                <strong>Score</strong>
-                <span id="correct">0</span>/<span id="total-questions">0</span>
+                <br>
+                <strong>Your Score - </strong>
+                <span id="correct">0</span>/<span id="total-questions-1">0</span>
+                <br>
+                <strong>Current Question - </strong>
+                <span id="current-question">0</span>/<span id="total-questions-2">0</span>
               </div>
           </nav>
     </header>
@@ -31,13 +33,22 @@
             <ul id="options" class="options mx-auto"></ul>
         </div>
 
-        <div class="row border-top">
-            <h3 class="validation"></h3>
+        <div class="row">
+            <p id="validation" class="mx-auto col-8 text-center border-top"></p>
+        </div>
+
+        <div id="save-score" class="row hide-start">
+            <form class="mx-auto" method="POST">
+                <label class="mx-auto" for="name">Name</label><br>
+                <input type="text" name="name" id="user-name" />
+                <button id="save-score-button" type="button" class="btn btn-primary mx-auto">Save Score</button>
+                <button id="clear-score-button" type="button" class="btn btn-primary mx-auto">Clear Scores</button>
+                <div id="msg" class="text-info"></div>
+            </form>
         </div>
 
         <div class="row">
-            <button type="button" id="start" class="btn btn-primary mx-auto justify-text">Start Quiz</button>
-            <button type="button" class="btn btn-info mx-auto hide-start">Go Back</button>
+            <button type="button" id="start" class="btn btn-primary mx-auto">Start Quiz</button>
         </div>
     </div>
 
