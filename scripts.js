@@ -1,4 +1,6 @@
-//Question List
+//This array stores the questions and their associated options and the correct answer.
+//We are able to easily calculate the number of quesitons, display questions and options
+//validate user selection with the answer.
 var questions = [
     {
         "question" : "Question #1",
@@ -21,69 +23,104 @@ var questions = [
 
 //Initialize Variables
 
-var questionIndex = 0;
+//Game starts at 0. Increase by 1 after user chooses an option. 
+//Game ends when this value is greater than the length of the question array
+var questionIndex = 0; 
 
+//Game starts at 0. Increases by 1 after user chooses correct option.
+//We display this in the UI and save it to local storage
+var userScore = 0;
+
+//Used to calculate the countdown clock and when to stop the timer
 var totalSeconds = 20;
 var secondsElapsed = 0;
 
-var userScore = 0;
-
+//Global variables used to set and clear interval and timeOut functions
 var interval;
 var timeOut;
 
 //Get references to variables
-var start = document.getElementById("start");
 
+//Buttons
+var start = document.getElementById("start");
+var saveScoreBtn = document.getElementById("save-score-button");
+
+//Timer
 var minutesDisplay = document.querySelector("#minutes");
 var secondsDisplay = document.querySelector("#seconds");
 
+//Questions
 var questionText = document.getElementById("question-text");
+
+//Question Options
 var optionList = document.getElementById("options");
-var totalQuestions1 = document.getElementById("total-questions-1");
-var totalQuestions2 = document.getElementById("total-questions-2");
+
+//Display what question user is currently on
 var currentQuestionElement = document.getElementById("current-question");
+
+//Display how many questions user has gotten correct
 var correctQuestions = document.getElementById("correct");
 
+//Display total number of questions
+var totalQuestions1 = document.getElementById("total-questions-1");
+var totalQuestions2 = document.getElementById("total-questions-2");
+
+//Used to show/hide the save-score form element
 var saveScoreForm = document.getElementById("save-score");
-var saveScoreBtn = document.getElementById("save-score-button");
+
+//User validation for save-score and Correct/Incorrect messages
 var msgDiv = document.querySelector("#msg");
-
-var viewScores = document.getElementById("view-scores");
-var clearScores = document.getElementById("clear-score-button");
-
 var validation = document.getElementById("validation");
 
+//Link to trigger click event to display all scores from LocalStorage
+var viewScores = document.getElementById("view-scores");
+
+//Not hooked up yet
+var clearScores = document.getElementById("clear-score-button");
+
+//Display final score at end of the game to user
+var finalScore = document.getElementById("final-score");
+
+
+//Helper function to get a question from the question array
 function getQuestion() {
     var currentQuestion = questions[questionIndex].question;
     return currentQuestion;
 }
 
+//Helper function to get a options from the question array
 function getOptions() {
     var currentOptions = questions[questionIndex].options;
     return currentOptions;
     }
 
+//Helper function to get answer from the questin array
 function getAnswer() {
     var currentAnswer = questions[questionIndex].answer;
     return currentAnswer;
 }
 
+//Helper function to get total number of questions
 function getTotalQuestions() {
     var totalQuestions = questions.length;
     return totalQuestions;
 }
 
+//Helper function to display current question. We add 1 because arrays are indexed at 0 and this
+//is weird to display to the user without doing so
 function getCurrentQuestion() {
     var currentQuestion = questionIndex + 1;
     currentQuestionElement.textContent = currentQuestion;
     return currentQuestion;
 }
 
+//Helper function to reset user score to 0
 function resetUserScore() {
     userScore = 0;
     correctQuestions.textContent = userScore;
 }
 
+//Helper function to giver user feedback if the option selected is correct and clear it after 1 second
 function correctAnwerMsg() {
     validation.textContent = "Correct";
 
@@ -92,6 +129,7 @@ function correctAnwerMsg() {
     }, 1000);
 }
 
+//Helper function to giver user feedback if the option selected is incorrect and clear it after 1 second
 function incorrectAnswerMsg() {
     validation.textContent = "Incorrect";
     timeOut = setTimeout(function(){
@@ -99,25 +137,24 @@ function incorrectAnswerMsg() {
     }, 1000);
 }
 
+//Helper function to clear user feedback
 function clearAnswerMsg() {
     validation.textContent = "";
     clearTimeout(timeOut);
 }
 
-// This function is where the "time" aspect of the timer runs
-// Notice no settings are changed other than to increment the secondsElapsed var
-function startTimer() {
-    // setTime();
-    // renderTime();
+//Helper function to reset the QuestionIndex back to 0
+function resetQuestionIndex() {
+    questionIndex = 0;
+}
 
-    // We only want to start the timer if totalSeconds is > 0
+//This begins our countdown and we increment secondsElapsed by 1 and then call renderTime to display
+//the new value. This happens every second and we check to make sure time has not ran out.
+//If it does, we end the game.
+function startTimer() {
     if (totalSeconds > 0) {
-        /* The "interval" variable here using "setInterval()" begins the recurring increment of the
-           secondsElapsed variable which is used to check if the time is up */
         interval = setInterval(function() {
             secondsElapsed++;
-
-            // So renderTime() is called here once every second.
             renderTime();
         }, 1000);
     } else {
@@ -125,24 +162,21 @@ function startTimer() {
     }
 }
 
+//Used to display the time remaing to the user
 function renderTime() {
-    // When renderTime is called it sets the textContent for the timer html...
     minutesDisplay.textContent = getFormattedMinutes();
     secondsDisplay.textContent = getFormattedSeconds();
 
-    // ..and then checks to see if the time has run out
     if (secondsElapsed >= totalSeconds) {
         stopTimer();
         endGame();
     }
 }
 
+//Calculates the minutes remaining
 function getFormattedMinutes() {
-    //
     var secondsLeft = totalSeconds - secondsElapsed;
-
     var minutesLeft = Math.floor(secondsLeft / 60);
-
     var formattedMinutes;
 
     if (minutesLeft < 10) {
@@ -154,11 +188,11 @@ function getFormattedMinutes() {
     return formattedMinutes;
 }
 
+//Calculates the secons remaining
 function getFormattedSeconds() {
     var secondsLeft = (totalSeconds - secondsElapsed) % 60;
-
     var formattedSeconds;
-
+    
     if (secondsLeft < 10) {
         formattedSeconds = "0" + secondsLeft;
     } else {
@@ -168,35 +202,77 @@ function getFormattedSeconds() {
     return formattedSeconds;
 }
 
-/* This function stops the interval and also resets secondsElapsed
-   and calls "setTime()" which effectively reset the timer
-   to the input selections workMinutesInput.value and restMinutesInput.value */
+//Stops the timer
 function stopTimer() {
     secondsElapsed = 0;
     renderTime();
 }
 
-/* This function retrieves the values from the html input elements; Sort of
-   getting run in the background, it sets the totalSeconds variable which
-   is used in getFormattedMinutes/Seconds() and the renderTime() function.
-   It essentially resets our timer */
-function setTime() {
-    clearInterval(interval);
-    clearCurrentQuestion();
-    totalSeconds = 5;
+
+//Helper function to show the start button
+function showStart() {
+    start.classList.add("show-start");
 }
 
-function startGame() {
+//Helper function to hide the start button
+function hideStart() {
     start.classList.add("hide-start");
-    saveScoreForm.classList.add("hide-start");
-    saveScoreForm.classList.remove("show-start");
-
-    clearCurrentQuestion();
-    resetUserScore();
-    displayCurrentQuestion();
-    startTimer();
 }
 
+//Helper function to show the form that lets the user save their score
+function showSaveScoreForm() {
+    saveScoreForm.classList.remove("show-start");
+}
+
+//Helper function to hide the form that lets the user save their score
+function hideSaveScoreForm() {
+    saveScoreForm.classList.add("hide-start"); 
+}
+
+//Helper function to display the final score to user when the game is over
+function showFinalScore() {
+    finalScore.textContent = "Your score: " + userScore;
+}
+
+//Helper function to clear the final score to user when the game is over
+function hideFinalScore() {
+    finalScore.textContent = "";
+}
+
+//Helper function to display the input field that captures users name
+function showNameInput() {
+    saveScoreForm.classList.remove("hide-start");
+    saveScoreForm.classList.add("show-start");
+}
+
+//Helper function to hide the input field that captures users name
+function hideNameInput() {
+    saveScoreForm.classList.remove("show-start");
+    saveScoreForm.classList.add("hide-start");
+}
+
+//Helper function that clears the FinalScore
+function resetFinalScore() {
+    finalScore.textContent = "";
+}
+
+//Helper function to clear most elements
+function resetAllTextContent() {
+    questionText.textContent = "";
+    optionList.textContent = "";
+    userScore.textContent = 0;
+    correctQuestions.textContent = 0;
+    currentQuestionElement.textContent = 0;
+}
+
+//Helper fucntion to clear current question and options
+function clearCurrentQuestion() {
+    questionText.textContent = "";
+    optionList.textContent = "";
+}
+
+//Display current question, creates buttons for each option, addes event listener to each button
+//display total number of questions and current question
 function displayCurrentQuestion(){
     var question = getQuestion();
     var questionElement = document.createElement("p");
@@ -219,6 +295,7 @@ function displayCurrentQuestion(){
     currentQuestionElement.textContent = getCurrentQuestion();
 }
 
+//Validates user choice and displays messages based on validation
 function checkUserChoice(event) {
     event.preventDefault();
     var userChoice = event.target.textContent;
@@ -247,38 +324,7 @@ function checkUserChoice(event) {
         }
 }
 
-function clearCurrentQuestion() {
-    questionText.textContent = "";
-    optionList.textContent = "";
-}
-
-function displayResults() {
-    clearTimeout(timeOut);
-    validation.textContent = "Your score: " + userScore;
-    getUserEmail();
-    hideClearScore();
-}
-
-function getUserEmail() {
-    saveScoreForm.classList.remove("hide-start");
-    saveScoreForm.classList.add("show-start");
-}
-
-function hideUserEmail() {
-    saveScoreForm.classList.remove("show-start");
-    saveScoreForm.classList.add("hide-start");
-}
-
-function hideClearScore() {
-    clearScores.classList.remove("show-start");
-    clearScores.classList.add("hide-start");
-}
-
-function showClearScore() {
-    clearScores.classList.remove("hide-start");
-    clearScores.classList.add("show-start");
-}
-
+//Takes in value from input field and stores score to LocalStorage
 function saveUserScore(event) {
     event.preventDefault();
     clearAnswerMsg();
@@ -294,48 +340,18 @@ function saveUserScore(event) {
       displayMessage("error", "Email cannot be blank");
     } else {
       localStorage.setItem(email, JSON.stringify(user));
-      hideUserEmail();
+      hideNameInput();
       questionText.textContent = "Score Has Been Saved. Would you like to play again?";
     }
 }
 
-function displayScores() {
-    clearCurrentQuestion();
-    clearAnswerMsg();
-    stopTimer();
-    clearInterval(interval);
-    clearTimeout(timeOut);
-    hideUserEmail();
-    showClearScore();
-    questionIndex = 0;
-    userScore.textContent = 0;
-    correctQuestions.textContent = 0;
-    currentQuestionElement.textContent = 0;
-    questionText.textContent = "High Scores";
-    start.classList.remove("hide-start");
-    forEachKey();
-    
-}
-
+//Helper function for displaying messages
 function displayMessage(type, message) {
     msgDiv.textContent = message;
     msgDiv.setAttribute("class", type);
   }
 
-function endGame() {
-    clearCurrentQuestion();
-    clearAnswerMsg();
-    stopTimer();
-    questionIndex = 0;
-    totalSeconds = 20;
-    questionText.textContent = "Game Over";
-    clearInterval(interval);
-    start.classList.remove("hide-start");
-    start.textContent = "Play Again"
-    displayResults();
-    clearTimeout(timeOut);
-}
-
+//Helper function to get all keys from LocalStorage and display them on the View High Scores Page
 function forEachKey() {
     var storageKeys = []
     for (var i = 0; i < localStorage.length; i++) {
@@ -348,10 +364,55 @@ function forEachKey() {
         liElement.textContent = allUsers.email + "-" + allUsers.score;
         options.appendChild(liElement); 
     }
-    console.log(storageKeys);
   }
 
+//Main function that starts the game when Start Quiz or Replay Quiz is clicked
+function startGame() {
+    hideStart();
+    hideSaveScoreForm();
+    resetFinalScore();
+    clearCurrentQuestion();
+    resetUserScore();
+    displayCurrentQuestion();
+    startTimer();
+}
 
+//Main function to view High Scores - Clears most text content and gets scores from localStorage
+function viewHighScores() {
+    clearCurrentQuestion();
+    clearAnswerMsg();
+    stopTimer();
+    clearInterval(interval);
+    clearTimeout(timeOut);
+    hideNameInput();
+    resetQuestionIndex();
+    showStart();
+    hideFinalScore()
+    resetAllTextContent();
+    forEachKey(); 
+
+    questionText.textContent = "High Scores";
+}
+
+//Main function to end the same, clear intervals, reset variables, update text accordingly
+function endGame() {
+    clearInterval(interval);
+    clearTimeout(timeOut);
+    clearCurrentQuestion();
+    clearAnswerMsg();
+    stopTimer();
+    resetQuestionIndex();
+    showFinalScore();
+    showNameInput();
+    showStart();
+
+    totalSeconds = 20;
+    questionText.textContent = "Game Over";
+    start.textContent = "Play Again"
+}
+
+//Event handlers for triggering the game, save the user score to local storage, and viewing
+//the high score page
 start.addEventListener("click", startGame);
 saveScoreBtn.addEventListener("click", saveUserScore);
-viewScores.addEventListener("click", displayScores);
+viewScores.addEventListener("click", viewHighScores);

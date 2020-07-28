@@ -35,15 +35,20 @@
 
         <div class="row">
             <p id="validation" class="mx-auto col-8 text-center border-top"></p>
+            <p id="final-score" class="mx-auto col-8 text-center"></p>
         </div>
 
         <div id="save-score" class="row hide-start">
             <form class="mx-auto" method="POST">
-                <label class="mx-auto" for="name">Name</label><br>
-                <input type="text" name="name" id="user-name" />
-                <button id="save-score-button" type="button" class="btn btn-primary mx-auto">Save Score</button>
-                <button id="clear-score-button" type="button" class="btn btn-primary mx-auto">Clear Scores</button>
-                <div id="msg" class="text-info"></div>
+                <div class="row">
+                    <div class="input-group">
+                        <input id="user-name" type="text" class="form-control" placeholder="Enter Your Name">
+                        <div class="input-group-append">
+                          <button id="save-score-button" class="btn btn-primary" type="button">Save</button>
+                        </div>
+                        <div id="msg" class="text-info"></div>
+                    </div>
+                </div>
             </form>
         </div>
 
